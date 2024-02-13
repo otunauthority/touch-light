@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flashlight App</title>
+<title>Advanced Flashlight App</title>
 <style>
     body {
         margin: 0;
@@ -58,13 +58,35 @@
     const light = document.getElementById('light');
     const toggleBtn = document.getElementById('toggleBtn');
     let isOn = false;
+    let stream = null;
 
     toggleBtn.addEventListener('click', () => {
         isOn = !isOn;
         if (isOn) {
-            light.style.top = '0';
-            light.style.left = '0';
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then((mediaStream) => {
+                    stream = mediaStream;
+                    const track = mediaStream.getVideoTracks()[0];
+                    const imageCapture = new ImageCapture(track);
+                    const photoCapabilities = imageCapture.getPhotoCapabilities()
+                        .then((capabilities) => {
+                            if (capabilities.torch) {
+                                const torchMode = isOn ? 'on' : 'off';
+                                track.applyConstraints({ advanced: [{ torch: true }] });
+                                track.applyConstraints({ advanced: [{ torch: isOn }] });
+                            }
+                        });
+                })
+                .catch((error) => {
+                    console.error('getUserMedia() failed: ', error);
+                });
         } else {
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach((track) => {
+                    track.stop();
+                });
+            }
             light.style.top = '-200%';
             light.style.left = '-200%';
         }
