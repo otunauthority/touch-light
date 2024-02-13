@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Flashlight App</title>
+<title>Flashlight App</title>
 <style>
     body {
         margin: 0;
@@ -15,28 +15,7 @@
         background-color: #f0f0f0;
     }
     
-    #flashlight {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        background-color: #fff;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    #light {
-        width: 100%;
-        height: 100%;
-        background-color: #fdd835;
-        position: absolute;
-        top: -200%;
-        left: -200%;
-        transition: all 0.3s ease;
-    }
-    
     #toggleBtn {
-        margin-top: 20px;
         padding: 10px 20px;
         font-size: 18px;
         cursor: pointer;
@@ -48,47 +27,32 @@
 </style>
 </head>
 <body>
-<div id="flashlight">
-    <div id="light"></div>
-</div>
 <button id="toggleBtn">Toggle Flashlight</button>
 
 <script>
-    const flashlight = document.getElementById('flashlight');
-    const light = document.getElementById('light');
     const toggleBtn = document.getElementById('toggleBtn');
-    let isOn = false;
-    let stream = null;
+    let torchOn = false;
 
-    toggleBtn.addEventListener('click', () => {
-        isOn = !isOn;
-        if (isOn) {
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                .then((mediaStream) => {
-                    stream = mediaStream;
-                    const track = mediaStream.getVideoTracks()[0];
-                    const imageCapture = new ImageCapture(track);
-                    const photoCapabilities = imageCapture.getPhotoCapabilities()
-                        .then((capabilities) => {
-                            if (capabilities.torch) {
-                                const torchMode = isOn ? 'on' : 'off';
-                                track.applyConstraints({ advanced: [{ torch: true }] });
-                                track.applyConstraints({ advanced: [{ torch: isOn }] });
-                            }
-                        });
-                })
-                .catch((error) => {
-                    console.error('getUserMedia() failed: ', error);
-                });
-        } else {
-            if (stream) {
-                const tracks = stream.getTracks();
-                tracks.forEach((track) => {
-                    track.stop();
-                });
+    toggleBtn.addEventListener('click', async () => {
+        torchOn = !torchOn;
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            const track = stream.getVideoTracks()[0];
+            const imageCapture = new ImageCapture(track);
+            if ('torch' in imageCapture) {
+                await imageCapture.torch.toggle(torchOn);
+            } else {
+                console.error('Torch feature not supported on this device.');
             }
-            light.style.top = '-200%';
-            light.style.left = '-200%';
+        } catch (error) {
+            console.error('Error accessing camera:', error);
+        }
+    });
+
+    // Listen for visibility change event to turn off the flashlight if the page is hidden
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden' && torchOn) {
+            toggleBtn.click();
         }
     });
 </script>
