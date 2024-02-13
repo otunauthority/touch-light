@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touch Light App</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #container {
+            width: 300px;
+            height: 300px;
+            background-color: #333;
+            border-radius: 50%;
+            position: relative;
+        }
+        #light {
+            width: 80%;
+            height: 80%;
+            background-color: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.5;
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container">
+    <div id="light"></div>
+</div>
+
+<script>
+    // JavaScript
+    const light = document.getElementById('light');
+
+    // Function to toggle light on touch
+    function toggleLight() {
+        if (light.style.opacity === '0.5') {
+            light.style.opacity = '1';
+        } else {
+            light.style.opacity = '0.5';
+        }
+    }
+
+    // Event listeners for touch and click
+    light.addEventListener('touchstart', toggleLight);
+    light.addEventListener('mousedown', toggleLight);
+</script>
+
+</body>
+</html>
