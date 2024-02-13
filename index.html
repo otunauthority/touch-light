@@ -1,65 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Touch Light App</title>
-    <style>
-        /* CSS Styles */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        #container {
-            width: 300px;
-            height: 300px;
-            background-color: #333;
-            border-radius: 50%;
-            position: relative;
-        }
-        #light {
-            width: 80%;
-            height: 80%;
-            background-color: #fff;
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.5;
-            transition: opacity 0.3s ease-in-out;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashlight App</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+    }
+    
+    #flashlight {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background-color: #fff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    #light {
+        width: 100%;
+        height: 100%;
+        background-color: #fdd835;
+        position: absolute;
+        top: -200%;
+        left: -200%;
+        transition: all 0.3s ease;
+    }
+    
+    #toggleBtn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #2196F3;
+        color: #fff;
+    }
+</style>
 </head>
 <body>
-
-<div id="container">
+<div id="flashlight">
     <div id="light"></div>
 </div>
+<button id="toggleBtn">Toggle Flashlight</button>
 
 <script>
-    // JavaScript
+    const flashlight = document.getElementById('flashlight');
     const light = document.getElementById('light');
+    const toggleBtn = document.getElementById('toggleBtn');
+    let isOn = false;
 
-    // Function to toggle light on touch
-    function toggleLight() {
-        if (light.style.opacity === '0.5') {
-            light.style.opacity = '1';
+    toggleBtn.addEventListener('click', () => {
+        isOn = !isOn;
+        if (isOn) {
+            light.style.top = '0';
+            light.style.left = '0';
         } else {
-            light.style.opacity = '0.5';
+            light.style.top = '-200%';
+            light.style.left = '-200%';
         }
-    }
-
-    // Event listeners for touch and click
-    light.addEventListener('touchstart', toggleLight);
-    light.addEventListener('mousedown', toggleLight);
+    });
 </script>
-
 </body>
 </html>
